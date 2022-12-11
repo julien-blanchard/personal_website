@@ -1,0 +1,182 @@
+<head>
+    <link rel="stylesheet" href="https://pyscript.net/alpha/pyscript.css" />
+    <script defer src="https://pyscript.net/alpha/pyscript.js"></script>
+    <py-env>
+      - whichever python library you intend to use
+    </py-env>
+</head>
+
+# **********************************************************************
+
+<body>
+    <div id="viz"></div>
+<body>
+
+# **********************************************************************
+
+<py-script>
+    x = "Hey this is Julien!"
+    pyscript.write("viz",x)
+</py-script>
+
+# **********************************************************************
+
+<head>
+    <py-env>
+      - pandas
+      - matplotlib
+      - networkx
+    </py-env>
+</head>
+
+
+# **********************************************************************
+
+<body>
+    <h1><b>Pandas table and plot</b></h1>
+    <br>
+    <p id="pandas-table"></p>
+    <br>
+    <p id="pandas-plot"></p>
+<body>
+
+# **********************************************************************
+
+<py-script>
+    # libraries
+    import pandas as pd
+    from matplotlib import pyplot as plt
+    import networkx as nx
+    from pyodide.http import open_url
+
+    # functions
+    def getDataFrame(data):
+        df = pd.read_csv(open_url(data))
+        return df
+
+    # table
+    pokemons = "https://raw.githubusercontent.com/julien-blanchard/dbs/main/pokemon_go.csv"
+    df = getDataFrame(pokemons)
+    pyscript.write("pandas-table",df.head())
+
+    # network plot
+    n = df.filter(["Primary", "Secondary", "Attack", "Defense", "Capture_rate"])
+    n = n[n["Secondary"] != "None"]
+
+    def getNetwPlot(data, serie1, serie2, serie3):
+      G = nx.from_pandas_edgelist(data, serie1, serie2, edge_attr=True)
+      edgelist = nx.to_edgelist(G)
+
+      colors = [i/len(G.nodes) for i in range(len(G.nodes))]
+
+      fig,ax = plt.subplots()
+      ax = nx.draw(
+          G,
+          with_labels=True,
+          node_size=[v * 200 for v in dict(G.degree()).values()],
+          width=[v[2][serie3] / 500 for v in edgelist],
+          font_size=10,
+          node_color=colors,
+          cmap="BuPu"
+      )
+      pyscript.write("pandas-plot",fig)
+
+    getNetwPlot(n, "Primary", "Secondary", "Attack")
+</py-script>
+
+# **********************************************************************
+
+<button id="first">Click me</button>
+<p id="second"></p>
+
+# **********************************************************************
+
+let a = document.getElementById("first");
+let b = document.getElementById("second");
+
+const getCompleted = () => {
+   b.innerHTML = "pizza";
+ }
+
+a.addEventListener("click", getCompleted);
+
+# **********************************************************************
+
+<head>
+    <link rel="stylesheet" href="https://unpkg.com/@picocss/pico@latest/css/pico.min.css">
+    <script defer src="https://pyscript.net/alpha/pyscript.js"></script>
+    <py-env>
+      - folium
+    </py-env>
+</head>
+
+# **********************************************************************
+
+from geopy.geocoders import Nominatim
+
+def getCoordinates(city_name):
+    geolocator = Nominatim(user_agent="MyApp")
+    location = geolocator.geocode(city_name)
+    return [location.latitude,location.longitude]
+
+# **********************************************************************
+
+<body>
+    <main class="container">
+      <div class="headings">
+        <h1>In-browser geospatial data in Python</h1>
+        <h3> <i>Building a web application using Pyscript and Folium</i> </h3>
+      </div>
+      <div>
+        <details>
+          <summary role="button">View web app parameters</summary>
+          <div class="grid">
+            <label>
+              Latitude
+              <input type="text" id="lat" class="outline" placeholder="" required>
+            </label>
+            <label>
+              Longitude
+              <input type="text" id="lon" class="outline" placeholder="" required>
+            </label>
+          </div>
+          <a href="#" role="button" id="userinput">Create</a>
+        </details>
+      </div>
+      <details>
+        <summary role="button">View weather and geospatial data</summary>
+        <div class="container">
+          <div id="geomap"></div>
+        </div>
+      </details>
+    </main>
+</body>
+
+# **********************************************************************
+
+<py-script>
+    # libraries
+    import folium
+    from js import document, Element
+    from pyodide import create_proxy
+
+    def getMap(event):
+      document.getElementById("geomap").innerHTML = ""
+      input_lat = document.getElementById("lat").value
+      input_long = document.getElementById("lon").value
+      latitude = float(input_lat)
+      longitude = float(input_long)
+      m = folium.Map(
+          location=[latitude,longitude],
+          tiles="OpenStreetMap",
+          zoom_start=12
+         )
+      folium.Marker(
+          [latitude,longitude],
+          popup=folium.Popup(max_width=650)
+          ).add_to(m)
+      pyscript.write("geomap",m)
+
+    button = document.getElementById("userinput")
+    button.addEventListener("click", create_proxy(getMap))
+</py-script>

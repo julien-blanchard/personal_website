@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="style.css">
+    <script type="text/javascript" src="script.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vega@5.20.2"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vega-lite@5.1.0"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vega-embed@6.17.0"></script>
+    <title>Simple Pokemons dashboard using Vega-lite</title>
+  </head>
+  <body class="back">
+    <div class="wrapper">
+      <div class="box" id="vis1">
+        <script type="text/javascript">
+          getBarPlot("#vis1")
+        </script>
+      </div>
+      <div class="box" id="vis2">
+        <script type="text/javascript">
+          getPlot("#vis2")
+        </script>
+      </div>
+      <div class="box" id="vis3">
+        <script type="text/javascript">
+          getScatterPlot("#vis3")
+        </script>
+      </div>
+      <div class="box" id="vis4">
+        <script type="text/javascript">
+          getDonutPlot("#vis4")
+        </script>
+      </div>
+    </div>
+  </body>
+</html>
