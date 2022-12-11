@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr" data-theme="dark">
+
+<head>
+  <meta charset="utf-8">
+  <script src="https://unpkg.com/compromise"></script>
+  <title>NLP with Compromise.js</title>
+</head>
+
+<body>
+  <main class="container">
+    <div class="headings">
+    <h2>Basic text processing using <a href="https://github.com/spencermountain/compromise/" target="_blank">Compromise.js</a></h2>
+    <h3>An in-browser rule-based parser</h3>
+    </div>
+    <br>
+    <form>
+      <label>Enter your text below:</label>
+      <textarea type="text" rows=4 id="text_input" placeholder="Make sure that the text that you paste here is in English."></textarea>
+      <label>Output:</label>
+      <textarea type="text" rows=4 id="text_output" placeholder="Output."></textarea>
+      <select id="choice">
+        <option>To plural form</option>
+        <option>To negative form</option>
+        <option>To future tense</option>
+        <option>To past tense</option>
+        <option>To POS tags</option>
+      </select>
+      <a href="#" role="button" onclick="getNLP()">Process</a>
+      <a href="#" role="button" onclick="clearText()">Clear</a>
+    </form>
+  </main>
+</body>
+
+</html>
