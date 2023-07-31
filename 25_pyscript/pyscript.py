@@ -64,7 +64,7 @@
       import seaborn as sns
       from pyodide.http import open_url
       from js import document, Element
-      from pyodide import create_proxy
+      from pyodide.ffi import create_proxy
 
       rc = {
         "axes.grid" : False,
