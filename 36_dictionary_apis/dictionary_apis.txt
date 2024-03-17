@@ -1,0 +1,351 @@
+class WordMeaning:
+    
+    def __init__(self):
+        self.data = {
+            "term": "",
+            "pos-tag": [],
+            "pronounciation": [],
+            "definition": []
+        }
+
+    def getContent(self,term):
+        url = f"https://www.dictionary.com/browse/{term}"
+        url_page = requests.get(url)
+        soup = BeautifulSoup(url_page.content, "html.parser")
+        return soup
+ 
+    def getData(self,term):
+        soup = self.getContent(term)
+        self.data["term"] = term
+        for term in soup.find_all("span", class_="luna-pos"):
+            self.data["pos-tag"].append(term.text.strip())
+        for term in soup.find_all("span", class_="pron-spell-content css-7iphl0 evh0tcl1"):
+            self.data["pronounciation"].append(term.text.replace("[","").replace("]","").strip())
+        for term in soup.find_all("span", class_="one-click-content css-nnyc96 e1q3nk1v1"):
+            self.data["definition"].append(term.text.strip())
+
+    def getDefinition(self,term):
+        parsed = self.getData(term)
+        for k,v in self.data.items():
+            if k == "term":
+                print(f"Term:\n\n\t{v.title()}")
+            if k == "pronounciation":
+                x = 1
+                print(f"\nPronounciation(s):\n")
+                for val in v:
+                    print(f"\t{x}. {val}")
+                    x+=1
+            if k == "pos-tag":
+                x = 1
+                print(f"\nPOS-tag(s):\n")
+                for val in v:
+                    print(f"\t{x}. {val.upper()}")
+                    x+=1
+            if k == "definition":
+                x = 1
+                print(f"\nDefinition(s):\n")
+                for val in v:
+                    print(f"\t{x}. {val.capitalize()}")
+                    x+=1
+
+if __name__ == "__main__":
+    meaning = WordMeaning()
+    meaning.getDefinition("python")
+
+# **********************************************************************
+
+sentence = ["So","we","beat","on","boats","against","the","current","borne","back","ceaselessly","into","the","past"]
+
+data = {
+            "term": "",
+            "pos-tag": [],
+            "pronounciation": [],
+            "definition": []
+        }
+
+start_time = time.time()
+
+def getTimeToData(term):
+    url = f"https://www.dictionary.com/browse/{term}"
+    url_page = requests.get(url)
+    soup = BeautifulSoup(url_page.content, "html.parser")
+    data["term"] = term
+    for term in soup.find_all("span", class_="luna-pos"):
+        data["pos-tag"].append(term.text.strip())
+    for term in soup.find_all("span", class_="pron-spell-content css-7iphl0 evh0tcl1"):
+        data["pronounciation"].append(term.text.replace("[","").replace("]","").strip())
+    for term in soup.find_all("span", class_="one-click-content css-nnyc96 e1q3nk1v1"):
+        data["definition"].append(term.text.strip())
+
+if __name__ == "__main__":
+    for s in sentence:
+        getTimeToData(s)
+    print("%s seconds" % (time.time() - start_time))
+
+# **********************************************************************
+
+import requests
+
+def getFreeDictAPI(term):
+    terms = f"https://api.dictionaryapi.dev/api/v2/entries/en/{term}"
+    response_terms = requests.get(terms).json()
+    return response_terms
+
+word = getFreeDictAPI("hot-dog")
+print(word)
+
+# **********************************************************************
+
+import requests
+import pprint
+
+class WordMeaning:
+
+    def getFreeDictAPI(self,term):
+        terms = f"https://api.dictionaryapi.dev/api/v2/entries/en/{term}"
+        response_terms = requests.get(terms).json()
+        return response_terms
+
+    def getDefinition(self,term):
+        words = self.getFreeDictAPI(term)
+        for word in words[:1]:
+            a,b,c,d = 1,1,1,1
+            print(f"Term:\n\n\t{word['word'].capitalize()}")
+            print("\nPOS-tags(s):\n")
+            for w in word['meanings']:
+                print(f"\t{a}. {w['partOfSpeech'].upper()}")
+                a+=1
+            print("\nPronounciation(s):\n")
+            try:
+                for w in word["phonetics"]:
+                    print(f"\t{b}. {w['text']}")
+                    b+=1
+            except:
+                print("\tNot available")
+            print("\nOnline resource(s):\n")
+            for w in word["sourceUrls"]:
+                print(f"\t{c}. {w}")
+                c+=1
+            print("\nDefinition(s):\n")
+            for w in word["meanings"]:
+                for t in w["definitions"]:
+                    print(f"\t{d}. {t['definition']}")
+                    d+=1 
+
+if __name__ == "__main__":
+    meaning = WordMeaning()
+    meaning.getDefinition("python")
+
+# **********************************************************************
+
+sentence = ["So","we","beat","on","boats","against","the","current","borne","back","ceaselessly","into","the","past"]
+
+data = []
+
+start_time = time.time()
+
+def getTimeToData(term):
+    terms = f"https://api.dictionaryapi.dev/api/v2/entries/en/{term}"
+    response_terms = requests.get(terms).json()
+    data.append(response_terms)
+
+if __name__ == "__main__":
+    for s in sentence:
+        getTimeToData(s)
+    print("%s seconds" % (time.time() - start_time))
+
+# **********************************************************************
+
+import requests
+import json
+import pprint
+
+def getMeaning(lang,term):
+    app_id = "********"
+    app_key = "********"
+    language = lang
+    url = f"https://od-api.oxforddictionaries.com/api/v2/entries/{language}/{term.lower()}"
+    r = requests.get(url, headers = {"app_id" : app_id, "app_key" : app_key})
+    term = r.json()
+    return term
+
+word = getMeaning("en","javascript")
+pprint.pprint(word)
+
+# **********************************************************************
+
+import requests
+import json
+import pprint
+
+def getMeaning(lang,term):
+    app_id = "********"
+    app_key = "********"
+    language = lang
+    url = f"https://od-api.oxforddictionaries.com/api/v2/entries/{language}/{term.lower()}"
+    r = requests.get(url, headers = {"app_id" : app_id, "app_key" : app_key})
+    term = r.json()
+    return term
+
+word = getMeaning("fr","bonjour")
+pprint.pprint(word)
+
+# **********************************************************************
+
+import requests
+import json
+import pprint
+
+class WordMeaning:
+
+    def __init__(self):
+        self.app_id = "********"
+        self.app_key = "********"
+
+    def getMeaning(self,lang,term):
+        language = lang
+        url = f"https://od-api.oxforddictionaries.com/api/v2/entries/{language}/{term.lower()}"
+        r = requests.get(url, headers = {"app_id" : self.app_id, "app_key" : self.app_key})
+        term = r.json()
+        return term
+
+    def getDefinition(self,lang,term):
+        words = self.getMeaning(lang,term)
+        a,b,c = 1,1,1
+        for keys,word in words.items():
+            if keys == "results":
+                print(f'Term:\n\n\t{word[0]["id"].capitalize()}')
+                for w in word:
+                    print("\nPOS-tag(s):\n")
+                    for content in w["lexicalEntries"]:
+                        print(f'\t{a}. {content["lexicalCategory"]["text"]}')
+                        a+=1
+                print("\nPronunciation(s):\n")
+                for w in word[0]["lexicalEntries"][0]["entries"][0]["pronunciations"]:
+                    print(f'\t{b}. {w["phoneticSpelling"]}')
+                    print(f'\t{b+1}. {w["audioFile"]}')
+                for w in word:
+                    print("\nDefinition(s):\n")
+                    for content in w["lexicalEntries"]:
+                        for cont in content["entries"][0]["senses"]:
+                            print(f'\t{c}. {"".join(cont["definitions"]).capitalize()}')
+                            c+=1
+
+
+if __name__ == "__main__":
+    meaning = WordMeaning()
+    meaning.getDefinition("en","python")
+
+# **********************************************************************
+
+sentence = ["So","we","beat","on","boats","against","the","current","borne","back","ceaselessly","into","the","past"]
+
+data = []
+
+start_time = time.time()
+
+def getTimeToData(term):
+    app_id = "********"
+    app_key = "********"
+    language = "en"
+    url = f"https://od-api.oxforddictionaries.com/api/v2/entries/{language}/{term.lower()}"
+    r = requests.get(url, headers = {"app_id" : app_id, "app_key" : app_key})
+    term = r.json()
+    data.append(term)
+
+if __name__ == "__main__":
+    for s in sentence:
+        getTimeToData(s)
+    print("%s seconds" % (time.time() - start_time))
+
+# **********************************************************************
+
+import requests
+import json
+import pprint
+
+def getMeaning(term):
+    app_key = "********"
+    url = f"https://www.dictionaryapi.com/api/v3/references/collegiate/json/{term}?key={app_key}"
+    r = requests.get(url)
+    term = r.json()
+    return term
+
+word = getMeaning("python")
+pprint.pprint(word)
+
+# **********************************************************************
+
+import requests
+import json
+import pprint
+
+class WordMeaning:
+
+    def __init__(self):
+        self.app_key = "********"
+
+    def getMeaning(self,term):
+        url = f"https://www.dictionaryapi.com/api/v3/references/collegiate/json/{term}?key={self.app_key}"
+        r = requests.get(url)
+        term = r.json()
+        return term
+    
+    def getDefinition(self,term):
+        words = self.getMeaning(term)
+        a,b,c = 1,1,1
+        print(f'Term:\n\n\t{term.capitalize()}')
+        print("\nPOS-tag(s):\n")
+        for word in words:
+            print(f'\t{a}. {word["fl"].capitalize()}')
+            a+=1
+        print("\nPronunciation(s):\n")
+        for word in words:
+            for w,v in word["hwi"].items():
+                if w == "prs":
+                    print(f'\t{b}. {v[0]["mw"]}')
+                    b+=1
+        print("\nDefinitions(s):\n")
+        for word in words:
+            print(f'\t{c}. {" ".join(word["shortdef"]).capitalize()}')
+            c+=1
+
+if __name__ == "__main__":
+    meaning = WordMeaning() 
+    meaning.getDefinition("python")
+
+# **********************************************************************
+
+sentence = ["So","we","beat","on","boats","against","the","current","borne","back","ceaselessly","into","the","past"]
+
+data = []
+
+start_time = time.time()
+
+def getTimeToData(term):
+    app_key = "b9a26a53-83de-4915-add1-c2478f888436"
+    url = f"https://www.dictionaryapi.com/api/v3/references/collegiate/json/{term}?key={self.app_key}"
+    r = requests.get(url)
+    term = r.json()
+    data.append(term)
+
+if __name__ == "__main__":
+    for s in sentence:
+        getTimeToData(s)
+    print("%s seconds" % (time.time() - start_time))
+
+# **********************************************************************
+
+import requests
+
+def getMeaning(term):
+    headers = {
+	"X-RapidAPI-Key": "******",
+	"X-RapidAPI-Host": "******"
+        }
+    url = f"https://wordsapiv1.p.rapidapi.com/words/{term.lower()}"
+    r = requests.get(url, headers = headers)
+    term = r.json()
+    return term
+
+getMeaning("python")
